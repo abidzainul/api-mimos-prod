@@ -1,18 +1,16 @@
 <?php
-class Model_posm extends CI_Model
+class Model_visit_pause extends CI_Model
 {
-    var $table = 'posm';
+    var $table = 'visit_pause';
     var $primaryKey = 'id';
 
-	public function getByDate($userid, $date)
+	public function getByHead($visitids)
 	{
-        $this->db->select('id, userid, customerno, posmdate, 
-            regionid, salesofficeid, salesgroupid, salesdistrictid,
-            cycle, week, year');
-        $this->db->from($this->table);
-        $this->db->where('posmdate', $date);
-        $this->db->where('userid', $userid);
-        $active = "(active != 2 OR active IS NULL)";
+        $this->db->select('vp.id, vp.visitid, vp.starttime, vp.stoptime');
+        $this->db->join('visit as v', 'vp.visitid = v.id');
+        $this->db->from('visit_pause as vp');
+        $this->db->where_in('visitid', $visitids);
+        $active = "(vp.active != 2 OR vp.active IS NULL)";
         $this->db->where($active);
 		$data = $this->db->get()->result_array();
 		return $data;
@@ -20,12 +18,11 @@ class Model_posm extends CI_Model
     
 	public function getById($id)
 	{
-        $this->db->select('id, userid, customerno, posmdate, 
-            regionid, salesofficeid, salesgroupid, salesdistrictid, 
-            cycle, week, year');
-        $this->db->from($this->table);
-        $this->db->where($this->primaryKey, $id);
-        $active = "(active != 2 OR active IS NULL)";
+        $this->db->select('vp.id, vp.visitid, vp.starttime, vp.stoptime');
+        $this->db->join('visit as v', 'vp.visitid = v.id');
+        $this->db->from('visit_pause as vp');
+        $this->db->where('vp.id', $id);
+        $active = "(vp.active != 2 OR vp.active IS NULL)";
         $this->db->where($active);
 		$data = $this->db->get()->row();
 		return $data;
@@ -43,19 +40,6 @@ class Model_posm extends CI_Model
         $this->db->from($this->table);
 		$data = $this->db->get()->result();
 		return $data;
-    }
-
-    function cekIsExist($userid, $customerno, $posmdate){
-        $this->db->select('*');
-        $this->db->from($this->table);
-        $this->db->where('userid', $userid);
-        $this->db->where('customerno', $customerno);
-        $this->db->where('posmdate', $posmdate);
-        $active = "(active != 2 OR active IS NULL)";
-        $this->db->where($active);
-        $this->db->order_by('createdon', 'DESC');
-		$data = $this->db->get()->row();
-        return $data;
     }
 
     public function insert($data){

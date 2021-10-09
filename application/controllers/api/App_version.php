@@ -15,8 +15,10 @@ class App_version extends REST_Controller{
         $userid	= $this->input->get("userid");
         
         if($userid == null){
-            $response['status'] = FALSE;
-            $response['message'] = "Gagal mendapatkan data";
+            $last = $this->appversion->getLastVersionAllUser();
+            $response['status'] = TRUE;
+            $response['message'] = "Berhasil mendapatkan data";
+            $response['data'] = $last;
             $this->response($response);
             exit;
         }
@@ -103,29 +105,14 @@ class App_version extends REST_Controller{
         $data['version_name'] = $this->post('version_name');
         $data['release_date'] = $this->post('release_date');
         $data['release_log'] = $this->post('release_log');
-        $data['link'] = $this->post('link');
+        $data['link_android'] = $this->post('link_android');
+        $data['link_ios'] = $this->post('link_ios');
         $data['force_update'] = $this->post('force_update');
         $data['all_user'] = $this->post('all_user');
 
         $data['createdby'] = $userid;
         $data['createdon'] = date('Y-m-d H:i:s');
 
-        // $id = $this->post('id');
-        // $exist = null;
-
-        // if($id != null){
-        //     // CEK DATA IF EXIST BY ID
-        //     $exist = $this->appversion->getById($id);
-        // }
-
-        // if($exist != null){
-        //     // UPDATE
-        //     $result = $this->appversion->update($id, $data);
-        // }else{
-        //     // INSERT
-        //     $id = $this->appversion->insert($data);
-        //     $result = $this->appversion->getById($id);
-        // }
         // INSERT
         $id = $this->appversion->insert($data);
         $result = $this->appversion->getById($id);
@@ -150,7 +137,8 @@ class App_version extends REST_Controller{
         $data['version_name'] = $this->put('version_name');
         $data['release_date'] = $this->put('release_date');
         $data['release_log'] = $this->put('release_log');
-        $data['link'] = $this->put('link');
+        $data['link_android'] = $this->post('link_android');
+        $data['link_ios'] = $this->post('link_ios');
         $data['force_update'] = $this->put('force_update');
         $data['all_user'] = $this->put('all_user');
 

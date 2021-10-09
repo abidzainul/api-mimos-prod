@@ -56,6 +56,20 @@ class Model_posm_detail extends CI_Model
 		return $data;
     }
 
+    function cekIsExist($posmid, $posmtypeid, $materialgroupid){
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('posmid', $posmid);
+        $this->db->where('posmtypeid', $posmtypeid);
+        $this->db->where('materialgroupid', $materialgroupid);
+        $active = "(active != 2 OR active IS NULL)";
+        $this->db->where($active);
+        $this->db->order_by('id', 'DESC');
+        $this->db->order_by('createdon', 'DESC');
+		$data = $this->db->get()->row();
+        return $data;
+    }
+
     public function insert($data){
         $this->db->insert($this->table, $data);
         $insert_id = $this->db->insert_id();

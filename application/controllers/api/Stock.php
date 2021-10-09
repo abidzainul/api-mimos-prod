@@ -89,15 +89,32 @@ class Stock extends REST_Controller{
         //     $id = $this->stock->insert($data);
         //     $result = $this->stock->getById($id);
         // }
+
+        $exist = $this->stock->cekIsExist(
+            $data['userid'], 
+            $data['customerno'], 
+            $data['stockdate']
+        );
+        
+        $result;
+        if($exist != null){
+            // UPDATE
+            $this->stock->update($exist->id, $data);
+            $result = $this->stock->getById($exist->id);
+        }else{
+            // INSERT
+            $id = $this->stock->insert($data);
+            $result = $this->stock->getById($id);
+        }
         // INSERT
-        $id = $this->stock->insert($data);
-        $result = $this->stock->getById($id);
+        // $id = $this->stock->insert($data);
+        // $result = $this->stock->getById($id);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal menyimpan data";
 
-        if($result){
+        if($result != null){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil menyimpan data";
             $response['data'] = $result;

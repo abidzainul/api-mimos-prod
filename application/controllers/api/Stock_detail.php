@@ -100,15 +100,31 @@ class Stock_detail extends REST_Controller{
         //     $id = $this->stock_detail->insert($data);
         //     $result = $this->stock_detail->getById($id);
         // }
+
+        $exist = $this->stock_detail->cekIsExist(
+            $data['stockid'], 
+            $data['materialid']
+        );
+        
+        $result;
+        if($exist != null){
+            // UPDATE
+            $this->stock_detail->update($exist->id, $data);
+            $result = $this->stock_detail->getById($exist->id);
+        }else{
+            // INSERT
+            $id = $this->stock_detail->insert($data);
+            $result = $this->stock_detail->getById($id);
+        }
         // INSERT
-        $id = $this->stock_detail->insert($data);
-        $result = $this->stock_detail->getById($id);
+        // $id = $this->stock_detail->insert($data);
+        // $result = $this->stock_detail->getById($id);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal menyimpan data";
 
-        if($id){
+        if($result != null){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil menyimpan data";
             $response['data'] = $result;

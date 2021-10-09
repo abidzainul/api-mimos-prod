@@ -7,7 +7,7 @@ class Model_visit extends CI_Model
 	public function getByDate($userid, $date)
 	{
         $this->db->select('id, userid, customerno, visitdate, 
-            notvisitreason, notbuyreason, 
+            notvisitreason, notbuyreason, checkintime, checkouttime,
             regionid, salesofficeid, salesgroupid, salesdistrictid, 
             cycle, week, year');
         $this->db->from($this->table);
@@ -22,7 +22,7 @@ class Model_visit extends CI_Model
 	public function getById($id)
 	{
         $this->db->select('id, userid, customerno, visitdate, 
-            notvisitreason, notbuyreason, 
+            notvisitreason, notbuyreason, checkintime, checkouttime,
             regionid, salesofficeid, salesgroupid, salesdistrictid, 
             cycle, week, year');
         $this->db->from($this->table);
@@ -45,6 +45,17 @@ class Model_visit extends CI_Model
         $this->db->from($this->table);
 		$data = $this->db->get()->result();
 		return $data;
+    }
+
+    function cekIsExist($userid, $customerno, $visitdate){
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('userid', $userid);
+        $this->db->where('customerno', $customerno);
+        $this->db->where('visitdate', $visitdate);
+        $this->db->order_by('id', 'DESC');
+        $data = $this->db->get()->result();
+        return $data;
     }
 
     public function insert($data){

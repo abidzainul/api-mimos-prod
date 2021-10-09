@@ -9,6 +9,7 @@ class Model_appversion extends CI_Model
         $this->db->select('*');
         $this->db->from($this->table);
         $this->db->order_by("id", "DESC");
+        $this->db->where("inactive", "0");
 		$data = $this->db->get()->row();
 		return $data;
 	}
@@ -18,6 +19,7 @@ class Model_appversion extends CI_Model
         $this->db->select('*');
         $this->db->from($this->table);
         $this->db->where("all_user", "1");
+        $this->db->where("inactive", "0");
         $this->db->order_by("id", "DESC");
 		$data = $this->db->get()->row();
 		return $data;
@@ -46,6 +48,7 @@ class Model_appversion extends CI_Model
     function countAll(){
         $this->db->select('*');
         $this->db->from($this->table);
+        $this->db->where("inactive", "0");
 		$data = $this->db->get()->num_rows();
 		return $data;
     }
@@ -53,6 +56,7 @@ class Model_appversion extends CI_Model
     function getAll(){
         $this->db->select('*');
         $this->db->from($this->table);
+        $this->db->where("inactive", "0");
 		$data = $this->db->get()->result();
 		return $data;
     }

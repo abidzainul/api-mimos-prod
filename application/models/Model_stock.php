@@ -45,6 +45,19 @@ class Model_stock extends CI_Model
 		return $data;
     }
 
+    function cekIsExist($userid, $customerno, $stockdate){
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('userid', $userid);
+        $this->db->where('customerno', $customerno);
+        $this->db->where('stockdate', $stockdate);
+        $active = "(active != 2 OR active IS NULL)";
+        $this->db->where($active);
+        $this->db->order_by('createdon', 'DESC');
+		$data = $this->db->get()->row();
+        return $data;
+    }
+
     public function insert($data){
         $this->db->insert($this->table, $data);
         $insert_id = $this->db->insert_id();

@@ -44,6 +44,18 @@ class Model_stock_detail extends CI_Model
 		return $data;
     }
 
+    function cekIsExist($stockid, $materialid){
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('stockid', $stockid);
+        $this->db->where('materialid', $materialid);
+        $active = "(active != 2 OR active IS NULL)";
+        $this->db->where($active);
+        $this->db->order_by('createdon', 'DESC');
+		$data = $this->db->get()->row();
+        return $data;
+    }
+
     public function insert($data){
         $this->db->insert($this->table, $data);
         $insert_id = $this->db->insert_id();

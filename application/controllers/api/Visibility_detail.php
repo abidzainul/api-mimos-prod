@@ -98,15 +98,31 @@ class Visibility_detail extends REST_Controller{
         //     $id = $this->visibility_detail->insert($data);
         //     $result = $this->visibility_detail->getById($id);
         // }
+
+        $exist = $this->visibility_detail->cekIsExist(
+            $data['visibilityid'], 
+            $data['materialid']
+        );
+        
+        $result;
+        if($exist != null){
+            // UPDATE
+            $this->visibility_detail->update($exist->id, $data);
+            $result = $this->visibility_detail->getById($exist->id);
+        }else{
+            // INSERT
+            $id = $this->visibility_detail->insert($data);
+            $result = $this->visibility_detail->getById($id);
+        }
         // INSERT
-        $id = $this->visibility_detail->insert($data);
-        $result = $this->visibility_detail->getById($id);
+        // $id = $this->visibility_detail->insert($data);
+        // $result = $this->visibility_detail->getById($id);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal menyimpan data";
 
-        if($id){
+        if($result != null){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil menyimpan data";
             $response['data'] = $result;

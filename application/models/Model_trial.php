@@ -34,6 +34,23 @@ class Model_trial extends CI_Model
 		$data = $this->db->get()->row();
 		return $data;
 	}
+
+	public function getExist($userid, $trialdate, $trialtype, $materialid, $competitorbrandid, $name)
+	{
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('userid', $userid);
+        $this->db->where('trialdate', $trialdate);
+        $this->db->where('trialtype', $trialtype);
+        $this->db->where('materialid', $materialid);
+        $this->db->where('competitorbrandid', $competitorbrandid);
+        $this->db->where('name', $name);
+        $active = "(active != 2 OR active IS NULL)";
+        $this->db->where($active);
+        $this->db->order_by('createdon', 'DESC');
+		$data = $this->db->get()->row();
+		return $data;
+    }
 	
     function countAll(){
         $this->db->select('*');

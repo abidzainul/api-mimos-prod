@@ -105,16 +105,31 @@ class Sellin_detail extends REST_Controller{
         //     $result = $this->sellin_detail->getById($id);
         // }
 
-        $cek = $this->sellin_detail->cekSellinDetail($data['sellinid'], $data['materialid']);
+        $exist = $this->sellin_detail->cekIsExist(
+            $data['sellinid'], 
+            $data['materialid']
+        );
+
+        $result;
+        if($exist != null){
+            // UPDATE
+            $this->sellin_detail->update($exist->id, $data);
+            $result = $this->sellin_detail->getById($exist->id);
+        }else{
+            // INSERT
+            $id = $this->sellin_detail->insert($data);
+            $result = $this->sellin_detail->getById($id);
+        }
+
         // INSERT
-        $id = $this->sellin_detail->insert($data);
-        $result = $this->sellin_detail->getById($id);
+        // $id = $this->sellin_detail->insert($data);
+        // $result = $this->sellin_detail->getById($id);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal menyimpan data";
 
-        if($id){
+        if($result != null){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil menyimpan data";
             $response['data'] = $result;

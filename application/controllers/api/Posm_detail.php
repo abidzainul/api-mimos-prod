@@ -101,15 +101,32 @@ class Posm_detail extends REST_Controller{
         //     $id = $this->posm_detail->insert($data);
         //     $result = $this->posm_detail->getById($id);
         // }
+
+        $exist = $this->posm_detail->cekIsExist(
+            $data['posmid'], 
+            $data['posmtypeid'], 
+            $data['materialgroupid']
+        );
+
+        $result;
+        if($exist != null){
+            // UPDATE
+            $this->posm_detail->update($exist->id, $data);
+            $result = $this->posm_detail->getById($exist->id);
+        }else{
+            // INSERT
+            $id = $this->posm_detail->insert($data);
+            $result = $this->posm_detail->getById($id);
+        }
         // INSERT
-        $id = $this->posm_detail->insert($data);
-        $result = $this->posm_detail->getById($id);
+        // $id = $this->posm_detail->insert($data);
+        // $result = $this->posm_detail->getById($id);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal menyimpan data";
 
-        if($id){
+        if($result != null){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil menyimpan data";
             $response['data'] = $result;

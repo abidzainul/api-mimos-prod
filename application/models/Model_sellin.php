@@ -47,6 +47,19 @@ class Model_sellin extends CI_Model
 		return $data;
     }
 
+    function cekIsExist($userid, $customerno, $sellindate){
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('userid', $userid);
+        $this->db->where('customerno', $customerno);
+        $this->db->where('sellindate', $sellindate);
+        $active = "(active != 2 OR active IS NULL)";
+        $this->db->where($active);
+        $this->db->order_by('createdon', 'DESC');
+		$data = $this->db->get()->row();
+        return $data;
+    }
+
     public function insert($data){
         $this->db->insert($this->table, $data);
         $insert_id = $this->db->insert_id();

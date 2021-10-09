@@ -68,6 +68,10 @@ class Visit extends REST_Controller{
         $data['salesofficeid'] = $this->post('salesofficeid');
         $data['salesgroupid'] = $this->post('salesgroupid');
         $data['salesdistrictid'] = $this->post('salesdistrictid');
+        if($this->post('checkintime') != null)
+            $data['checkintime'] = $this->post('checkintime');
+        if($this->post('checkouttime') != null)
+            $data['checkouttime'] = $this->post('checkouttime');
         $data['cycle'] = $this->post('cycle');
         $data['week'] = $this->post('week');
         $data['year'] = $this->post('year');
@@ -92,15 +96,28 @@ class Visit extends REST_Controller{
         //     $id = $this->visit->insert($data);
         //     $result = $this->visit->getById($id);
         // }
+
+        $exist = $this->visit->cekIsExist($data['userid'], $data['customerno'], $data['visitdate']);
+        
+        $result;
+        if($exist != null){
+            // UPDATE
+            $this->visit->update($exist[0]->id, $data);
+            $result = $this->visit->getById($exist[0]->id);
+        }else{
+            // INSERT
+            $id = $this->visit->insert($data);
+            $result = $this->visit->getById($id);
+        }
         // INSERT
-        $id = $this->visit->insert($data);
-        $result = $this->visit->getById($id);
+        // $id = $this->visit->insert($data);
+        // $result = $this->visit->getById($id);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal menyimpan data";
 
-        if($result){
+        if($result != null){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil menyimpan data";
             $response['data'] = $result;
@@ -119,6 +136,10 @@ class Visit extends REST_Controller{
         $data['salesofficeid'] = $this->put('salesofficeid');
         $data['salesgroupid'] = $this->put('salesgroupid');
         $data['salesdistrictid'] = $this->put('salesdistrictid');
+        if($this->put('checkintime') != null)
+            $data['checkintime'] = $this->put('checkintime');
+        if($this->put('checkouttime') != null)
+            $data['checkouttime'] = $this->put('checkouttime');
         $data['cycle'] = $this->put('cycle');
         $data['week'] = $this->put('week');
         $data['year'] = $this->put('year');

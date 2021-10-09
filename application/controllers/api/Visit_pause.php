@@ -3,25 +3,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH . '/libraries/REST_Controller.php';
 use Restserver\Libraries\REST_Controller;
 
-class Posm extends REST_Controller{
+class Visit_pause extends REST_Controller{
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Model_posm', 'posm');
+        $this->load->model('Model_visit_pause', 'model');
     }
   	
-    public function getByDate_get(){
+    public function getByHead_get(){
 
-        $userid	= $this->input->get("userid");
-        $tgl 	= $this->input->get("tgl");
-        $data = $this->posm->getByDate($userid, $tgl);
+        $ids 	= $this->input->get("visit_ids");
+        $data = $this->model->getByHead($ids);
         
-        if($userid == null || $tgl == null){
-            $response['status'] = FALSE;
-            $response['message'] = "Gagal mendapatkan data";
-            $this->response($response);
-            exit;
+        // Response
+        $response['status'] = FALSE;
+        $response['message'] = "Gagal mendapatkan data";
+
+        if($data){
+            $response['status'] = TRUE;
+            $response['message'] = "Berhasil mendapatkan data";
+            $response['data'] = $data;
         }
+
+        $this->response($response);
+
+    }
+  	
+    public function getByHead_post(){
+
+        $ids 	= $this->input->post("visit_ids");
+        $data   = null;
+
+        if($ids != null){
+            $data = $this->model->getByHead($ids);
+        }
+        
+        // Response
+        $response['status'] = FALSE;
+        $response['message'] = "Gagal mendapatkan data";
 
         if($data){
             $response['status'] = TRUE;
@@ -30,19 +49,13 @@ class Posm extends REST_Controller{
             $response['data'] = $data;
         }
 
-        if(empty($data)){
-            $response['status'] = TRUE;
-            $response['message'] = "Data tidak ditemukan";
-            $response['data'] = null;
-        }
-
         $this->response($response);
 
     }
 
     public function getById_get($id)
     {
-        $data = $this->posm->getById($id);
+        $data = $this->model->getById($id);
         
         // Response
         $response['status'] = FALSE;
@@ -59,62 +72,43 @@ class Posm extends REST_Controller{
     }
   
     public function add_post(){
-        $data['userid'] = $this->post('userid');
-        $data['customerno'] = $this->post('customerno');
-        $data['posmdate'] = $this->post('posmdate');
-        $data['regionid'] = $this->post('regionid');
-        $data['salesofficeid'] = $this->post('salesofficeid');
-        $data['salesgroupid'] = $this->post('salesgroupid');
-        $data['salesdistrictid'] = $this->post('salesdistrictid');
-        $data['cycle'] = $this->post('cycle');
-        $data['week'] = $this->post('week');
-        $data['year'] = $this->post('year');
+        $userid = $this->input->get_request_header('user');
+        $data['visitid'] = $this->post('visitid');
+        if($this->post('starttime') != null)
+            $data['starttime'] = $this->post('starttime');
+        if($this->post('stoptime') != null)
+            $data['stoptime'] = $this->post('stoptime');
 
-        $data['createdby'] = $this->post('userid');
+        $data['active'] = '0';
+        $data['createdby'] = $userid;
         $data['createdon'] = date('Y-m-d H:i:s');
+        $data['createdms'] = date('Y-m-d H:i:s');
 
         // $id = $this->post('id');
         // $exist = null;
 
         // if($id != null){
         //     // CEK DATA IF EXIST BY ID
-        //     $exist = $this->posm->getById($id);
+        //     $exist = $this->model->getById($id);
         // }
 
         // if($exist != null){
         //     // UPDATE
-        //     $result = $this->posm->update($id, $data);
+        //     $result = $this->model->update($id, $data);
         // }else{
         //     // INSERT
-        //     $id = $this->posm->insert($data);
-        //     $result = $this->posm->getById($id);
+        //     $id = $this->model->insert($data);
+        //     $result = $this->model->getById($id);
         // }
-
-        $exist = $this->posm->cekIsExist(
-            $data['userid'], 
-            $data['customerno'], 
-            $data['posmdate']
-        );
-
-        $result;
-        if($exist != null){
-            // UPDATE
-            $this->posm->update($exist->id, $data);
-            $result = $this->posm->getById($exist->id);
-        }else{
-            // INSERT
-            $id = $this->posm->insert($data);
-            $result = $this->posm->getById($id);
-        }
         // INSERT
-        // $id = $this->posm->insert($data);
-        // $result = $this->posm->getById($id);
+        $id = $this->model->insert($data);
+        $result = $this->model->getById($id);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal menyimpan data";
 
-        if($result != null){
+        if($result){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil menyimpan data";
             $response['data'] = $result;
@@ -124,29 +118,26 @@ class Posm extends REST_Controller{
     }
   
     public function update_put(){
-        $data['userid'] = $this->put('userid');
-        $data['customerno'] = $this->put('customerno');
-        $data['posmdate'] = $this->put('posmdate');
-        $data['regionid'] = $this->put('regionid');
-        $data['salesofficeid'] = $this->put('salesofficeid');
-        $data['salesgroupid'] = $this->put('salesgroupid');
-        $data['salesdistrictid'] = $this->put('salesdistrictid');
-        $data['cycle'] = $this->put('cycle');
-        $data['week'] = $this->put('week');
-        $data['year'] = $this->put('year');
+        $userid = $this->input->get_request_header('user');
+        $data['visitid'] = $this->put('visitid');
+        if($this->put('starttime') != null)
+            $data['starttime'] = $this->put('starttime');
+        if($this->put('stoptime') != null)
+            $data['stoptime'] = $this->put('stoptime');
 
-        $data['updatedby'] = $this->put('userid');
+        $data['updatedby'] = $userid;
         $data['updatedon'] = date('Y-m-d H:i:s');
+        $data['updatedms'] = date('Y-m-d H:i:s');
 
         $id = $this->put('id');
 
-        $result = $this->posm->update($id, $data);
+        $result = $this->model->update($id, $data);
 
         // Response
         $response['status'] = FALSE;
         $response['message'] = "Gagal mengupdate data";
 
-        if($id){
+        if($result){
             $response['status'] = TRUE;
             $response['message'] = "Berhasil mengupdate data";
             $response['data'] = $result;
@@ -158,7 +149,7 @@ class Posm extends REST_Controller{
     public function delete_delete()
     {
         $id = $this->delete('id');
-        $data = $this->posm->delete($id);
+        $data = $this->model->delete($id);
 
         // Response
         $response['status'] = false;
@@ -176,7 +167,7 @@ class Posm extends REST_Controller{
     public function delete_flag_delete()
     {
         $id = $this->delete('id');
-        $data = $this->posm->delete_flag($id);
+        $data = $this->model->delete_flag($id);
 
         // Response
         $response['status'] = false;
