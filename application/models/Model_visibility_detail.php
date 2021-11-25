@@ -6,8 +6,9 @@ class Model_visibility_detail extends CI_Model
 
 	public function getByHead($visibilityids)
 	{
-        $this->db->select('vd.id, vd.visibilityid, vd.materialid, m.name as materialname, vd.pac');
+        $this->db->select('vd.id, vd.visibilityid, vd.materialid, g.description as materialname, vd.pac');
         $this->db->join('material as m', 'vd.materialid = m.id');
+        $this->db->join('material_group as g', 'm.materialgroupid = g.id');
         $this->db->from('visibility_detail as vd');
         $this->db->where_in('visibilityid', $visibilityids);
         $active = "(vd.active != 2 OR vd.active IS NULL)";
@@ -55,10 +56,10 @@ class Model_visibility_detail extends CI_Model
     }
 
     public function insert($data){
-        $this->db->insert($this->table, $data);
-        $insert_id = $this->db->insert_id();
-
-        return $insert_id;
+        if ($this->db->insert($this->table, $data)){
+            return $this->db->insert_id();
+        }
+        return false;
     }
 
     public function update($id, $data){

@@ -11,9 +11,10 @@ class Sellin_detail extends REST_Controller{
     }
   	
     public function getByHead_get(){
+        $userid = $this->input->get_request_header('user');
 
         $ids 	= $this->input->get("sellin_ids");
-        $data = $this->sellin_detail->getByHead($ids);
+        $data = $this->sellin_detail->getByHead($ids, $userid);
         
         // Response
         $response['status'] = FALSE;
@@ -31,12 +32,13 @@ class Sellin_detail extends REST_Controller{
     }
   	
     public function getByHead_post(){
+        $userid = $this->input->get_request_header('user');
 
         $ids 	= $this->input->post("sellin_ids");
         $data   = null;
 
         if($ids != null){
-            $data = $this->sellin_detail->getByHead($ids);
+            $data = $this->sellin_detail->getByHead($ids, $userid);
         }
         
         // Response
@@ -70,6 +72,47 @@ class Sellin_detail extends REST_Controller{
 
         $this->response($response);
         
+    }
+  
+    public function addList_post(){
+        $userid = $this->input->get_request_header('user');
+		
+		$data = json_decode($_POST['data'], true);
+		
+		$result = $this->sellin_detail->insertBatch($userid, $data);
+		
+		if($result){
+            $response['status'] = TRUE;
+            $response['message'] = "Berhasil menyimpan data";
+            $response['total'] = count($result);
+            $response['data'] = $result;
+		}
+		else {
+			$response['status'] = FALSE;
+			$response['message'] = "Gagal menyimpan data";
+		}
+		
+		$this->response($response);
+    }
+  
+    public function getExist_post(){
+        $userid = $this->input->get_request_header('user');
+
+        $sellinid = $this->post('sellinid');
+        $materialid = $this->post('materialid');
+
+        $exist = null;
+        $exist = $this->sellin_detail->getExist(
+            $sellinid, 
+            $materialid, 
+            $userid
+        );
+
+        if($exist != null){
+            $this->response($exist);
+        }else{
+            $this->response('null');
+        }
     }
   
     public function add_post(){
@@ -107,7 +150,8 @@ class Sellin_detail extends REST_Controller{
 
         $exist = $this->sellin_detail->cekIsExist(
             $data['sellinid'], 
-            $data['materialid']
+            $data['materialid'],
+            $userid
         );
 
         $result;
@@ -118,7 +162,14 @@ class Sellin_detail extends REST_Controller{
         }else{
             // INSERT
             $id = $this->sellin_detail->insert($data);
-            $result = $this->sellin_detail->getById($id);
+            if($id){
+                $result = $this->sellin_detail->getById($id);
+                // $result = $this->sellin_detail->getExist(
+                //     $data['sellinid'], 
+                //     $data['materialid'],
+                //     $userid
+                // );
+            }
         }
 
         // INSERT

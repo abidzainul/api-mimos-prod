@@ -76,7 +76,7 @@ class Visit extends REST_Controller{
         $data['week'] = $this->post('week');
         $data['year'] = $this->post('year');
 
-        $data['active'] = $this->post('0');
+        // $data['active'] = 0;
         $data['createdby'] = $this->post('userid');
         $data['createdon'] = date('Y-m-d H:i:s');
 
@@ -144,7 +144,7 @@ class Visit extends REST_Controller{
         $data['week'] = $this->put('week');
         $data['year'] = $this->put('year');
 
-        $data['active'] = $this->put('0');
+        // $data['active'] = 0;
         $data['updatedby'] = $this->put('userid');
         $data['updatedon'] = date('Y-m-d H:i:s');
 

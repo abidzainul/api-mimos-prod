@@ -112,7 +112,9 @@ class Visibility_detail extends REST_Controller{
         }else{
             // INSERT
             $id = $this->visibility_detail->insert($data);
-            $result = $this->visibility_detail->getById($id);
+            if($id){
+                $result = $this->visibility_detail->getById($id);
+            }
         }
         // INSERT
         // $id = $this->visibility_detail->insert($data);

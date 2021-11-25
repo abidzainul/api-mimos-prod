@@ -71,10 +71,10 @@ class Model_posm_detail extends CI_Model
     }
 
     public function insert($data){
-        $this->db->insert($this->table, $data);
-        $insert_id = $this->db->insert_id();
-
-        return $insert_id;
+        if ($this->db->insert($this->table, $data)){
+            return $this->db->insert_id();
+        }
+        return false;
     }
 
     public function update($id, $data){

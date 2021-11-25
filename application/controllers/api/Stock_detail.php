@@ -114,7 +114,9 @@ class Stock_detail extends REST_Controller{
         }else{
             // INSERT
             $id = $this->stock_detail->insert($data);
-            $result = $this->stock_detail->getById($id);
+            if($id){
+                $result = $this->stock_detail->getById($id);
+            }
         }
         // INSERT
         // $id = $this->stock_detail->insert($data);

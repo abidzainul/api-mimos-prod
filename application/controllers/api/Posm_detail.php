@@ -116,7 +116,9 @@ class Posm_detail extends REST_Controller{
         }else{
             // INSERT
             $id = $this->posm_detail->insert($data);
-            $result = $this->posm_detail->getById($id);
+            if($id){
+                $result = $this->posm_detail->getById($id);
+            }
         }
         // INSERT
         // $id = $this->posm_detail->insert($data);

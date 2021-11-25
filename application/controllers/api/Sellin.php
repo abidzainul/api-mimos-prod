@@ -72,9 +72,10 @@ class Sellin extends REST_Controller{
         $data['year'] = $this->post('year');
         $data['amount'] = $this->post('amount');
         $data['notes'] = $this->post('notes');
+        $data['idsqlite'] = $this->post('id');
 
-        $data['createdby'] = $this->post('userid');
-        $data['createdon'] = date('Y-m-d H:i:s');
+        // $data['createdby'] = $this->post('userid');
+        // $data['createdon'] = date('Y-m-d H:i:s');
 
         // $id = $this->post('id');
         // $exist = null;
@@ -93,6 +94,7 @@ class Sellin extends REST_Controller{
         //     $result = $this->sellin->getById($id);
         // }
 
+        $exist = null;
         $exist = $this->sellin->cekIsExist(
             $data['userid'], 
             $data['customerno'], 
@@ -102,12 +104,30 @@ class Sellin extends REST_Controller{
         $result;
         if($exist != null){
             // UPDATE
-            $this->sellin->update($exist->id, $data);
+            $data['typein'] = 'UPDATE';
+            $data['updatedby'] = $this->post('userid');
+            $data['updatedon'] = date('Y-m-d H:i:s');
+            
+			if($data['amount'] != 0){
+				$this->sellin->update($exist->id, $data);
+			}
             $result = $this->sellin->getById($exist->id);
         }else{
             // INSERT
+            $data['typein'] = 'INSERT';
+            $data['createdby'] = $this->post('userid');
+            $data['createdon'] = date('Y-m-d H:i:s');
+
             $id = $this->sellin->insert($data);
-            $result = $this->sellin->getById($id);
+            if($id){
+                $result = $this->sellin->getById($id);
+                // $result = $this->sellin->getExist(
+                //     $data['userid'], 
+                //     $data['customerno'], 
+                //     $data['sellindate'],
+                //     $data['sellinno']
+                // );
+            }
         }
         // INSERT
         // $id = $this->sellin->insert($data);
@@ -124,6 +144,26 @@ class Sellin extends REST_Controller{
         }
 
         $this->response($response);
+    }
+  
+    public function cekExist_post(){
+        $data['userid'] = $this->post('userid');
+        $data['sellinno'] = $this->post('sellinno');
+        $data['customerno'] = $this->post('customerno');
+        $data['sellindate'] = $this->post('sellindate');
+
+        $exist = null;
+        $exist = $this->sellin->cekIsExist(
+            $data['userid'], 
+            $data['customerno'], 
+            $data['sellindate']
+        );
+
+        if($exist != null){
+            $this->response($exist);
+        }else{
+            $this->response('null');
+        }
     }
   
     public function update_put(){
@@ -197,4 +237,33 @@ class Sellin extends REST_Controller{
         $this->response($response);
     }
 
+    function uploadJson_post(){
+        $now = date('Y-m-d');
+        $userid = $this->post('userid');
+        $filename = $this->post('filename');
+        $path = "assets";
+        $config['upload_path'] = "./".$path;
+        $config['allowed_types'] = 'jpg|pdf|txt|json';
+        $config['remove_spaces'] = TRUE;
+        $config['encrypt_name'] = FALSE;
+        $config['max_size'] = 20000;
+        $config['file_name'] = $now.'-('.$userid.')-'.$filename;
+         
+
+        $this->load->library('upload', $config);
+        if($this->upload->do_upload("file")){
+            $data = array('upload_data' => $this->upload->data());
+ 
+            $path_file = $path."/".$data['upload_data']['file_name']; 
+
+            // $id = $this->input->post("id");
+            // $this->insert($path_file);
+             
+            // echo json_decode($result);
+            $response['status'] = true;
+            $response['message'] = "Berhasil upload data";
+			$this->response($response);
+        }
+ 
+    }
 }

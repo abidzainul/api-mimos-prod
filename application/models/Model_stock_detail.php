@@ -6,9 +6,10 @@ class Model_stock_detail extends CI_Model
 
 	public function getByHead($stockids)
 	{
-        $this->db->select('sd.id, sd.stockid, sd.materialid, m.name as materialname,
+        $this->db->select('sd.id, sd.stockid, sd.materialid, g.description as materialname,
             sd.bal, sd.slof, sd.pac, sd.qty');
         $this->db->join('material as m', 'sd.materialid = m.id');
+        $this->db->join('material_group as g', 'm.materialgroupid = g.id');
         $this->db->from('stock_detail as sd');
         $this->db->where_in('stockid', $stockids);
         $active = "(sd.active != 2 OR sd.active IS NULL)";
@@ -57,10 +58,10 @@ class Model_stock_detail extends CI_Model
     }
 
     public function insert($data){
-        $this->db->insert($this->table, $data);
-        $insert_id = $this->db->insert_id();
-
-        return $insert_id;
+        if ($this->db->insert($this->table, $data)){
+            return $this->db->insert_id();
+        }
+        return false;
     }
 
     public function update($id, $data){
