@@ -112,7 +112,7 @@ class Model_sellin_detail extends CI_Model
 		
 		$status = true;
 		if(count($res) > 0){
-			$this->db->insert_batch('sellin_detail', $res);
+			$status = $this->db->insert_batch('sellin_detail', $res);
 		}
 		
 		// SELECT DATA
@@ -134,11 +134,13 @@ class Model_sellin_detail extends CI_Model
 					AND sd.materialid = '$materialid'
 					AND sd.createdby = '$userid'
 					AND sd.active = 0
-					ORDER BY sd.createdon DESC
 				";
 				
 				$exist = $this->db->query($get)->result_array();
 				if(count($exist) != 0){
+					if(count($exist) > 1){
+						$this->delete_flag($exist[1]['id']);
+					}
 					array_push($result, $exist[0]);
 				}
 				

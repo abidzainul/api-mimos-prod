@@ -129,11 +129,35 @@ class Customer extends REST_Controller{
     }
      public function customerbyvisitday20210101_post()
     {
+			$version = $this->input->get_request_header('version');
+			$vCode = $this->input->get_request_header('version_code');
+			
+			// if($vCode == null){
+				// $this->response([
+					// 'status' => FALSE,
+					// 'message' =>'Silahkan Update aplikasi 2.1.1',
+					// 'data' => null
+				// ], REST_Controller::HTTP_BAD_REQUEST);
+			// }else if($vCode < 25){
+				// $this->response([
+					// 'status' => FALSE,
+					// 'message' =>'Silahkan Update aplikasi 2.1.1',
+					// 'data' => $vCode
+				// ], REST_Controller::HTTP_BAD_REQUEST);
+			// }
+
       $tgl = $this->post('tgl');
       //$visitday = date('N',strtotime($tgl));
         //(1 for Senin, 7 for minggu)
       //$visitday  = $this->post('visitday');
       $userid  = $this->post('userid');
+			// if($userid == '71401021'){
+			// 	$this->response([
+			// 		'status' => FALSE,
+			// 		'message' =>'Silahkan update aplikasi versi 2.1.1',
+			// 		'data' => []
+			// 	], REST_Controller::HTTP_BAD_REQUEST);
+			// }
         //$visitweek  = $this->post('visitweek');
       //$visitweek = $this->Model_Customer->getWeekGenapGanjilbyCycle($tgl);
       $data =  array(

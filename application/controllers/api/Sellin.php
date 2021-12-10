@@ -73,6 +73,7 @@ class Sellin extends REST_Controller{
         $data['amount'] = $this->post('amount');
         $data['notes'] = $this->post('notes');
         $data['idsqlite'] = $this->post('id');
+        $data['active'] = 0;
 
         // $data['createdby'] = $this->post('userid');
         // $data['createdon'] = date('Y-m-d H:i:s');
@@ -107,6 +108,7 @@ class Sellin extends REST_Controller{
             $data['typein'] = 'UPDATE';
             $data['updatedby'] = $this->post('userid');
             $data['updatedon'] = date('Y-m-d H:i:s');
+            $data['updatedms'] = $this->udate('Y-m-d H:i:s.u T');
             
 			if($data['amount'] != 0){
 				$this->sellin->update($exist->id, $data);
@@ -117,10 +119,35 @@ class Sellin extends REST_Controller{
             $data['typein'] = 'INSERT';
             $data['createdby'] = $this->post('userid');
             $data['createdon'] = date('Y-m-d H:i:s');
+            $data['createdms'] = $this->udate('Y-m-d H:i:s.u T');
 
+            $this->sellin->deleteFlagBy(
+				$data['userid'], 
+				$data['customerno'], 
+				$data['sellindate']
+			);
             $id = $this->sellin->insert($data);
             if($id){
-                $result = $this->sellin->getById($id);
+                // $result = $this->sellin->getById($id);
+				$countExist = $this->sellin->countExist(
+					$data['userid'], 
+					$data['customerno'], 
+					$data['sellindate']
+				);
+				if($countExist > 1){
+					$this->sellin->deleteFlagBy(
+						$data['userid'], 
+						$data['customerno'], 
+						$data['sellindate']
+					);
+					$result = $this->sellin->cekIsExist(
+						$data['userid'], 
+						$data['customerno'], 
+						$data['sellindate']
+					);
+				}else{
+					$result = $this->sellin->getById($id);
+				}
                 // $result = $this->sellin->getExist(
                 //     $data['userid'], 
                 //     $data['customerno'], 
@@ -201,6 +228,27 @@ class Sellin extends REST_Controller{
         $this->response($response);
     }
 
+    public function deleteBy_post()
+    {
+        $userid = $this->post('userid');
+        $customerno = $this->post('customerno');
+        $sellindate = $this->post('sellindate');
+
+        $data = $this->sellin->deleteBy($userid, $customerno, $sellindate);
+
+        // Response
+        $response['status'] = false;
+        $response['message'] = "Gagal menghapus data";
+
+        if($data){
+            $response['status'] = true;
+            $response['message'] = "Berhasil menghapus data";
+            $response['data'] = $data;
+        }
+
+        $this->response($response);
+    }
+
     public function delete_delete()
     {
         $id = $this->delete('id');
@@ -266,4 +314,14 @@ class Sellin extends REST_Controller{
         }
  
     }
+
+	private function udate($format = 'u', $utimestamp = null) {
+		if (is_null($utimestamp))
+			$utimestamp = microtime(true);
+
+		$timestamp = floor($utimestamp);
+		$milliseconds = round(($utimestamp - $timestamp) * 1000000);
+
+		return date(preg_replace('`(?<!\\\\)u`', $milliseconds, $format), $timestamp);
+	}
 }
