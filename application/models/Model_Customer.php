@@ -1,6 +1,9 @@
 <?php
 class Model_Customer extends CI_Model
 {
+	var $table = 'customer';
+	var $primaryKey = 'id';
+  
 	public function getCustomersByVisitDay($userid,$visitday,$visitweek,$tgl)
 	{
 		// $where = '(cu.visitweek=1 OR cu.visitweek=' . $visitweek . ')';
@@ -117,5 +120,11 @@ order by rp.customerno, material.id
 
     return $week;
   }
+
+	public function updateCoordinate($customerno, $data){
+		$this->db->where("customerno", $customerno);
+		return $this->db->update($this->table, $data);
+	}
+	
 }
 ?>

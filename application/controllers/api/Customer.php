@@ -132,19 +132,19 @@ class Customer extends REST_Controller{
 			$version = $this->input->get_request_header('version');
 			$vCode = $this->input->get_request_header('version_code');
 			
-			// if($vCode == null){
-				// $this->response([
-					// 'status' => FALSE,
-					// 'message' =>'Silahkan Update aplikasi 2.1.1',
-					// 'data' => null
-				// ], REST_Controller::HTTP_BAD_REQUEST);
-			// }else if($vCode < 25){
-				// $this->response([
-					// 'status' => FALSE,
-					// 'message' =>'Silahkan Update aplikasi 2.1.1',
-					// 'data' => $vCode
-				// ], REST_Controller::HTTP_BAD_REQUEST);
-			// }
+			if($vCode == null){
+				$this->response([
+					'status' => FALSE,
+					'message' =>'Silahkan Update aplikasi 2.1.2',
+					'data' => null
+				], REST_Controller::HTTP_BAD_REQUEST);
+			}else if($vCode < 25){
+				$this->response([
+					'status' => FALSE,
+					'message' =>'Silahkan Update aplikasi 2.1.2',
+					'data' => $vCode
+				], REST_Controller::HTTP_BAD_REQUEST);
+			}
 
       $tgl = $this->post('tgl');
       //$visitday = date('N',strtotime($tgl));
@@ -312,4 +312,30 @@ class Customer extends REST_Controller{
         }
       }
     }
+
+	public function updateCoordinate_put(){
+		$userid = $this->input->get_request_header('user');
+
+		$data['lat'] = $this->put('lat');
+		$data['lng'] = $this->put('lng');
+
+		$data['updatedby'] = $userid;
+		$data['updatedon'] = date('Y-m-d H:i:s');
+
+		$customerno = $this->put('customerno');
+
+		$result = $this->Model_Customer->updateCoordinate($customerno, $data);
+
+		// Response
+		$response['status'] = FALSE;
+		$response['message'] = "Gagal mengupdate data";
+
+		if($result){
+				$response['status'] = TRUE;
+				$response['message'] = "Berhasil mengupdate data";
+		}
+
+		$this->response($response);
+	}
+
 }

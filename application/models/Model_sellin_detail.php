@@ -112,7 +112,12 @@ class Model_sellin_detail extends CI_Model
 		
 		$status = true;
 		if(count($res) > 0){
-			$status = $this->db->insert_batch('sellin_detail', $res);
+			// $status = $this->db->insert_batch('sellin_detail', $res);
+			$this->db->insert_batch('sellin_detail', $res);
+			if($this->db->affected_rows() > 0)
+				$status = true;
+			else
+				$status = false;
 		}
 		
 		// SELECT DATA

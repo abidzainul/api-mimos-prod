@@ -8,7 +8,7 @@ class Model_visit extends CI_Model
 	{
         $this->db->select('id, userid, customerno, visitdate, 
             notvisitreason, notbuyreason, checkintime, checkouttime,
-            regionid, salesofficeid, salesgroupid, salesdistrictid, 
+            regionid, salesofficeid, salesgroupid, salesdistrictid, photo,
             cycle, week, year');
         $this->db->from($this->table);
         $this->db->where('visitdate', $date);
@@ -23,7 +23,7 @@ class Model_visit extends CI_Model
 	{
         $this->db->select('id, userid, customerno, visitdate, 
             notvisitreason, notbuyreason, checkintime, checkouttime,
-            regionid, salesofficeid, salesgroupid, salesdistrictid, 
+            regionid, salesofficeid, salesgroupid, salesdistrictid, photo,
             cycle, week, year');
         $this->db->from($this->table);
         $this->db->where($this->primaryKey, $id);
